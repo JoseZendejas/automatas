@@ -179,7 +179,7 @@ public class Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-        //aaaaa
+        //aaaa
         String nombre;
         nombre= JOptionPane.showInputDialog("Nombre del archivo");
         super.setTitle(nombre);
