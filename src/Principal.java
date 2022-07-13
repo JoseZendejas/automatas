@@ -8,11 +8,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -27,16 +30,85 @@ import javax.swing.JOptionPane;
 public class Principal extends javax.swing.JFrame {
     JFileChooser guardar_como = new JFileChooser();
     File archivo;
+    DefaultTableModel modelo_tabla;
     FileInputStream entrada;
     FileOutputStream salida;
     
-
+    ArrayList<Simbolo>ListaSimbolos;
     /**
      * Creates new form Principal
      */
     public Principal() {
     initComponents();
+    
+    //prefs = Preferences.userNodeForPackage(this.getClass());
+    
+    
+    ListaSimbolos = new ArrayList<>();
+    
+    modelo_tabla= new DefaultTableModel();
+    
+    modelo_tabla.addColumn("Cadena");
+    modelo_tabla.addColumn("num_linea");
+    
+    jTable1.setModel(modelo_tabla);
+    
     }
+    
+    public void analizar(File archivo){
+        
+        ListaSimbolos.clear();
+        
+        try (BufferedReader br = new BufferedReader (new FileReader(archivo))){
+            String linea;
+            int cont_linea=0;
+            while ((linea = br.readLine()) !=null){
+                
+                 System.out.println(cont_linea+": "+linea);
+                
+                 String[]cadenas = linea.split(" |\t");
+                 
+                 for (int t=0; t<cadenas.length;t++){
+                     
+                     
+                     if (!cadenas[t].isEmpty()){
+                         System.out.println("Candena: "+ cadenas[t]);
+                         ListaSimbolos.add(new Simbolo(cadenas[t],cont_linea));
+                         
+                     }
+                     
+                     
+                 }
+                 
+                cont_linea++;
+            }
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        jTable1.removeAll();
+        
+        for (int i=0; i< ListaSimbolos.size();i++){
+            String[] row = {"",""};
+            row[0]=ListaSimbolos.get(i).Cadena;
+            row[1]=""+ListaSimbolos.get(i).num_linea;
+            modelo_tabla.addRow(row);
+        }
+        
+    }
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
     
     
     
@@ -117,6 +189,11 @@ public class Principal extends javax.swing.JFrame {
                 jButton4MouseClicked(evt);
             }
         });
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -154,9 +231,17 @@ public class Principal extends javax.swing.JFrame {
                 {null, null}
             },
             new String [] {
-                "Title 1", "Título 2"
+                "Cadena", "Num_Linea"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -258,16 +343,14 @@ public class Principal extends javax.swing.JFrame {
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         // TODO add your handling code here:
-        String data = "1,2,3,,5,6,,";
-        String[] split = data.split(",");
-        for (int i=0; i<split.length; i++)
-            System.out.println(split[i]);
-            
-        
-        
-        
+        analizar(archivo);
+
         
     }//GEN-LAST:event_jButton1MouseClicked
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
